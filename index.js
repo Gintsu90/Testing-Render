@@ -1,18 +1,23 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import morgan from "morgan";
-import cors from "cors"
+import cors from "cors";
+import Person from "./models/person.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.json())
-app.use(cors())
-app.use(express.static("build"))
+
+app.use(express.json());
+app.use(cors());
+app.use(express.static("build"));
 
 morgan.token("person", (req, res) => {
-    return JSON.stringify(req.body)
-})
-app.use(morgan(":method :url :status :res[content-length] - :response-time ms :person"))
+    return JSON.stringify(req.body);
+});
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :person"));
 
 
 let names = [
@@ -55,7 +60,9 @@ const generateId = () => {
 
 
 app.get("/api/names", (req, res) => {
-    res.json(names);
+    Person.find({}).then(persons => {
+        res.json(persons)
+    })
 });
 
 app.get("/api/names/:id", (req, res) => {
